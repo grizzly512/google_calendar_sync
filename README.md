@@ -6,23 +6,28 @@
 
 ## 1. Запуск
 
-1. Переходим в папку с проектом, копируем env:
+1. Создаем google приложение с доступом к google календарю https://console.cloud.google.com/apis/dashboard
+2. Создаем OAuth 2.0 Client Web client https://console.cloud.google.com/apis/credentials
+3. Скачиваем json client file и размещаем его в google_apps/credentials/secret.json
+4. Добавляем в Authorized redirect URIs - http://127.0.0.1/callback/oauth2/calendar
+5. Добавляем свой емайл в список тестовых пользователей  - https://console.cloud.google.com/apis/credentials/consent
+6. Переходим в папку с проектом, копируем env:
 ```sh
 cd google_calendar_sync
 cp ./.env.example ./.env
 ```
-2. Устанавливаем и настраиваем docker и docker-compose (при необходимости);
-3. Запускаем проект:
+7. Устанавливаем и настраиваем docker и docker-compose (при необходимости);
+8. Запускаем проект:
 ```sh
 docker-compose up -d
 ```
-4. Создаем суперпользователя:
+9. Создаем суперпользователя:
 ```sh
 docker exec -it google_calendar_sync-web bash
 source ./venv/bin/activate
 python ./manage.py createsuperuser
 ```
-5. Заходим на сайт, по умолчанию - http://127.0.0.1
+10. Заходим на сайт, по умолчанию - http://127.0.0.1
 
 ## 2. Автоматические тесты
 Запускаем проект см. пункт 1
