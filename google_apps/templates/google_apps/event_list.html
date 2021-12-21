@@ -1,0 +1,72 @@
+{% extends "google_apps/base.html" %}
+{% load i18n %}
+
+{% block content %}
+{% if object_list %}
+<h1 class="mt-5"><span class="text-muted">{% translate 'Hall:' %}</span> {{ object_list.0.hall.name }}</h1>
+<h2 class="mb-5"><span class="text-muted">{% translate 'Last Sync:' %}</span> {{ object_list.0.hall.last_sync }}</h2>
+
+<nav class="mt-5">
+  <ul class="pagination justify-content-center">
+    <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+      <a class="page-link" href="{% if page_obj.has_previous %}{% url 'google_apps:hall_detail' hall=object_list.0.hall.pk %}?page={{ page_obj.previous_page_number }}{% else %}#{% endif %}" tabindex="-1">{% translate 'Backward' %}</a>
+    </li>
+    <li class="page-item disabled"><a class="page-link" href="#">{{ page_obj.number }}</a></li>
+    <li class="page-item disabled"><a class="page-link" href="#">/</a></li>
+    <li class="page-item disabled"><a class="page-link" href="#">{{page_obj.paginator.num_pages}}</a></li>
+    <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+      <a class="page-link " href="{% if page_obj.has_next %}{% url 'google_apps:hall_detail' hall=object_list.0.hall.pk %}?page={{ page_obj.next_page_number }}{% else %}#{% endif %}">{% translate 'Forward' %}</a>
+    </li>
+  </ul>
+</nav>
+<p class="text-center mb-5">{% translate 'DISPLAYED' %} {{ page_obj.start_index }}-{{ page_obj.end_index }} {% translate 'from' %} {{ page_obj.paginator.count }}</p>
+
+<table class="table mt-5">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">{% translate 'Event name' %}</th>
+      <th scope="col">{% translate 'Description' %}</th>
+      <th scope="col">{% translate 'ID' %}</th>
+      <th scope="col">{% translate 'Start time' %}</th>
+      <th scope="col">{% translate 'End time' %}</th>
+      <th scope="col">{% translate 'Intersection' %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for obj in object_list %}
+    <tr>
+      <th scope="row">{{ forloop.counter0 |add:page_obj.start_index }}</th>
+      <td><a href="{{ obj.last_response.htmlLink }}" target="_blank">{{ obj.name }}</a></td>
+      <td>{{ obj.description }}</td>
+      <td>{{ obj.google_id }}</td>
+      <td>{{ obj.date_start }}</td>
+      <td>{{ obj.date_end }}</td>
+      <td>{% if obj.error %}<i class="fas fa-times-circle text-danger"></i>{% else %}<i class="fas fa-check-circle text-success"></i>{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+
+
+
+<nav class="mt-5">
+  <ul class="pagination justify-content-center">
+    <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+      <a class="page-link" href="{% if page_obj.has_previous %}{% url 'google_apps:hall_detail' hall=object_list.0.hall.pk %}?page={{ page_obj.previous_page_number }}{% else %}#{% endif %}" tabindex="-1">{% translate 'Backward' %}</a>
+    </li>
+    <li class="page-item disabled"><a class="page-link" href="#">{{ page_obj.number }}</a></li>
+    <li class="page-item disabled"><a class="page-link" href="#">/</a></li>
+    <li class="page-item disabled"><a class="page-link" href="#">{{page_obj.paginator.num_pages}}</a></li>
+    <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+      <a class="page-link " href="{% if page_obj.has_next %}{% url 'google_apps:hall_detail' hall=object_list.0.hall.pk %}?page={{ page_obj.next_page_number }}{% else %}#{% endif %}">{% translate 'Forward' %}</a>
+    </li>
+  </ul>
+</nav>
+{% else %}
+
+<p class="text-center display-4 mt-5">{% translate 'No Events Here!' %}</p>
+
+{% endif %}
+{% endblock %}

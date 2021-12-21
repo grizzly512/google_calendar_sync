@@ -1,0 +1,56 @@
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+<button type="button" class="btn {{ btn_class|default:'btn-primary' }}" data-bs-toggle="modal" data-bs-target="#{{modal_pre}}{{modal_id}}">
+  {% translate btn_text %}
+</button>
+
+<div class="modal fade" id="{{modal_pre}}{{modal_id}}" tabindex="-1" role="dialog" aria-labelledby="{{modal_pre}}{{modal_id}}Label" aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="{{modal_pre}}{{modal_id}}Label">{% translate header %}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </button>
+      </div>
+      {% if form or del_name %}
+      <form method="post" enctype="multipart/form-data" action="{{ post_url }}{% for name in get_names %}{% if forloop.first %}?{% else %}&{% endif %}{{ name }}={% for value in get_values %}{%if forloop.counter == forloop.parentloop.counter %}{{ value }}{% endif %}{% endfor %}{% endfor %}">
+          <div class="modal-body">
+            {{additional_form_text | safe}}
+            {% csrf_token %}
+            {% if del_name %}
+            <p class="h3 text-center text-danger">{% translate 'Are you sure you want to delete' %}: {{del_name}}?</p>
+            {% else %}
+            {% if multiple %}
+              {% for i in multiple|make_list %}
+                  <div class="my-2 border border-1 border-secondary p-4">
+                    {{form|crispy}}
+                  </div>
+              {% endfor %}
+            {% else %}
+            {{form|crispy}}
+            {% endif %}
+            {% for name in hidden_name %}
+              {% for value in hidden_value %}
+                {%if forloop.counter == forloop.parentloop.counter %}
+                  <input type="hidden" name="{{name}}" value={{value}}>
+                {% endif %}
+              {% endfor %}
+            {% endfor %}
+
+            {% endif %}
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% translate 'Exit' %}</button>
+            <button type="submit" class="btn {% if del_name %}btn-danger{% else %}btn-primary{% endif %}">{% translate btn_success|default:'Save' %}</button>
+          </div>
+      </form>
+      {% elif display_text %}
+        {{ display_text | safe }}
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% translate 'Exit' %}</button>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>

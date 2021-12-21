@@ -1,0 +1,88 @@
+{% extends "google_apps/base.html" %}
+{% load i18n %}
+
+{% block content %}
+{% if object_list %}
+<h1 class="mt-5">{% translate 'Logs' %}</h1>
+
+<nav class="mt-5">
+  <ul class="pagination justify-content-center">
+    <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+      <a class="page-link" href="{% if page_obj.has_previous %}{% url 'google_apps:log' %}?page={{ page_obj.previous_page_number }}{% else %}#{% endif %}" tabindex="-1">{% translate 'Backward' %}</a>
+    </li>
+    <li class="page-item disabled"><a class="page-link" href="#">{{ page_obj.number }}</a></li>
+    <li class="page-item disabled"><a class="page-link" href="#">/</a></li>
+    <li class="page-item disabled"><a class="page-link" href="#">{{page_obj.paginator.num_pages}}</a></li>
+    <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+      <a class="page-link " href="{% if page_obj.has_next %}{% url 'google_apps:log' %}?page={{ page_obj.next_page_number }}{% else %}#{% endif %}">{% translate 'Forward' %}</a>
+    </li>
+  </ul>
+</nav>
+<p class="text-center mb-5">{% translate 'DISPLAYED' %} {{ page_obj.start_index }}-{{ page_obj.end_index }} {% translate 'from' %} {{ page_obj.paginator.count }}</p>
+
+<table class="table mt-5">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">{% translate 'Datetime' %}</th>
+      <th scope="col">{% translate 'Level' %}</th>
+      <th scope="col">{% translate 'Logger name' %}</th>
+      <th scope="col">{% translate 'Message' %}</th>
+      <th scope="col">{% translate 'Trace' %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for obj in object_list %}
+    <tr>
+      <th scope="row">{{ forloop.counter0 |add:page_obj.start_index }}</th>
+      <td>{{ obj.create_datetime }}</td>
+      <td>{{ obj.level }}</td>
+      <td>{{ obj.logger_name }}</td>
+      <td>{{ obj.msg }}</td>
+      <td>
+        {% if obj.trace %}
+          <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapse-{{obj.pk}}" role="button" aria-expanded="false" aria-controls="collapse-{{obj.pk}}">
+            TRACE
+          </a>
+
+        {% endif %}
+      </td>
+    </tr>
+    {% if obj.trace %}
+    <tr>
+      <td colspan="6">
+      <div class="collapse" id="collapse-{{obj.pk}}">
+        <div class="card card-body">
+          {{obj.trace}}
+        </div>
+      </div>
+      </td>
+    </tr>
+    {% endif %}
+
+    {% endfor %}
+  </tbody>
+</table>
+
+
+
+
+<nav class="mt-5">
+  <ul class="pagination justify-content-center">
+    <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+      <a class="page-link" href="{% if page_obj.has_previous %}{% url 'google_apps:log' %}?page={{ page_obj.previous_page_number }}{% else %}#{% endif %}" tabindex="-1">{% translate 'Backward' %}</a>
+    </li>
+    <li class="page-item disabled"><a class="page-link" href="#">{{ page_obj.number }}</a></li>
+    <li class="page-item disabled"><a class="page-link" href="#">/</a></li>
+    <li class="page-item disabled"><a class="page-link" href="#">{{page_obj.paginator.num_pages}}</a></li>
+    <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+      <a class="page-link " href="{% if page_obj.has_next %}{% url 'google_apps:log' %}?page={{ page_obj.next_page_number }}{% else %}#{% endif %}">{% translate 'Forward' %}</a>
+    </li>
+  </ul>
+</nav>
+{% else %}
+
+<p class="text-center display-4 mt-5">{% translate 'No Logs Here!' %}</p>
+
+{% endif %}
+{% endblock %}

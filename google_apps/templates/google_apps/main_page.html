@@ -1,0 +1,37 @@
+{% extends "google_apps/base.html" %}
+{% load i18n %}
+
+{% block content %}
+
+
+{% if not user.credentials %}<a href="{% url 'google_apps:user_register' %}" class="btn btn-outline-info">{% translate 'Set up credentials first' %}</a>{% endif %}
+
+
+{% url 'google_apps:company_create' as company_add_url %}
+
+{% if request.user.credentials %}
+{% include "blocks/modal_create_form.html" with btn_text="<i class='fas fa-plus'></i> Company" btn_class="btn-success" modal_pre="company_add" modal_id=object.pk header="Add company" btn_success="Add company" form=company_create_form post_url=company_add_url%} 
+{% endif %}
+
+<table class="table mt-5">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">{% translate 'Company' %}</th>
+      <th scope="col">{% translate 'Enabled Halls' %}</th>
+      <th scope="col">{% translate 'Disabled Halls' %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for object in object_list %}
+    <tr>
+      <th scope="row">{{ forloop.counter }}</th>
+      <td>{% if object.last_sync %}<a href="{% url 'google_apps:company_detail' pk=object.pk %}">{{ object.name }}</a>{% else %}{{ object.name }}{% endif %}</td>
+      <td>{% if object.last_sync %}{{ object.enabled_halls_string }}{% else %}{% translate 'updating... refresh page...' %}{% endif %}</td>
+      <td>{% if object.last_sync %}{{ object.disabled_halls_string }}{% else %}{% translate 'updating... refresh page...' %}{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

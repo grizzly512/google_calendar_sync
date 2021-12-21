@@ -1,0 +1,42 @@
+{% extends "google_apps/base.html" %}
+{% load i18n %}
+
+{% block content %}
+
+<h1 class="mt-5"><span class="text-muted">{% translate 'Company:' %}</span> {{ object.name }}</h1>
+<h2 class="mb-5"><span class="text-muted">{% translate 'Last Sync:' %}</span> {{ object.last_sync }}</h2>
+<table class="table mt-5">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">{% translate 'Calendar name' %}</th>
+      <th scope="col">{% translate 'Hall name' %}</th>
+      <th scope="col">{% translate 'Description' %}</th>
+      <th scope="col">{% translate 'Last update' %}</th>
+      <th scope="col">{% translate 'State' %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for obj in object.halls.all %}
+    <tr>
+      <th scope="row">{{ forloop.counter }}</th>
+      <td>{% if not obj.disabled and obj.last_sync %}<a href="{% url 'google_apps:hall_detail' hall=obj.pk %}">{{ obj.name }}</a>{% else %}{{ obj.name }}{% endif %}</td>
+      <td>{% if obj.given_name %}{{ obj.given_name }}{% else %}<span class="text-warning">DISABLED</span>{% endif %}</td>
+      <td>{{ obj.description }}</td>
+      <td>{% if not obj.disabled %}{% if obj.last_sync %}{{ obj.last_sync }}{% else %}{% translate 'updating... refresh page...' %}{% endif %}{% endif %}</td>
+      <td>
+        {% if obj.disabled %}
+          {% url 'google_apps:hall_enable' pk=obj.pk as hall_enable_url %}
+          {% include "blocks/modal_create_form.html" with btn_text="Enable" btn_class="btn-warning" modal_pre="hall_enable" modal_id=obj.pk header="Name Your Hall" btn_success="Enable Hall" form=hall_enable_form post_url=hall_enable_url %} 
+        {% else %}
+          {% url 'google_apps:hall_disable' id=obj.pk company=object.pk as hall_disable_url %}
+          {% include "blocks/modal_create_form.html" with btn_text="Disable" btn_class="btn-success" modal_pre="hall_disable" modal_id=obj.pk header="Are you sure you want to disable hall?" btn_success="Disable Hall" form=hall_disable_form post_url=hall_disable_url %}
+          
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}
